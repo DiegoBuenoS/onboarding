@@ -129,4 +129,14 @@
   html {
     @apply font-sans;
   }
+  input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    margin-top: 10px;
+    opacity: 0.4;
+    cursor: pointer;
+  }
 }

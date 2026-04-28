@@ -4,6 +4,7 @@ import {
   Car, Shield, Globe, Heart, Camera, ChevronLeft,
   ChevronRight, ChevronDown, Check, LogOut, Info,
   HelpCircle, AlertTriangle, Menu, X, Pencil,
+  Upload, File, Trash2, CheckCircle2,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -75,8 +76,9 @@ interface TabDef {
 interface StepConfig {
   id: number; title: string; subtitle: string; alert?: string
   icon: React.ComponentType<{ className?: string }>
-  group: 'Pessoal' | 'Documentos' | 'Complementar'
+  group: 'Pessoal' | 'Documentos' | 'Complementar' | 'Arquivos'
   optional?: boolean
+  uploads?: true
   fields?: FieldDef[]
   checkboxSection?: { title: string; items: CheckboxDef[] }
   tabs?: TabDef[]
@@ -117,7 +119,33 @@ const INITIAL_FORM: FormData = {
 
 // ── Steps ──────────────────────────────────────────────────────────────────
 
+const ADMISSION_DOCS = [
+  { id: 'rg',           label: 'RG / Carteira de Identidade',       desc: 'Frente e verso do documento',                      required: true  },
+  { id: 'cpf',          label: 'CPF',                                desc: 'Cartão ou comprovante do CPF',                     required: true  },
+  { id: 'ctps',         label: 'Carteira de Trabalho (CTPS)',        desc: 'Página de identificação e última anotação',        required: true  },
+  { id: 'titulo',       label: 'Título de Eleitor',                  desc: 'Frente e verso',                                   required: true  },
+  { id: 'residencia',   label: 'Comprovante de Residência',          desc: 'Conta de luz, água ou gás (últimos 3 meses)',      required: true  },
+  { id: 'foto',         label: 'Foto 3×4 recente',                   desc: 'Foto colorida com fundo branco',                   required: true  },
+  { id: 'antecedentes', label: 'Certidão de Antecedentes Criminais', desc: 'Emitida nos últimos 90 dias',                      required: true  },
+  { id: 'aso',          label: 'Atestado de Saúde Ocupacional (ASO)',desc: 'Exame médico admissional',                         required: true  },
+  { id: 'dados_banc',   label: 'Comprovante de Conta Bancária',      desc: 'Conta corrente ou poupança em seu nome',          required: true  },
+  { id: 'pis',          label: 'Cartão PIS / NIT / PASEP',           desc: 'Cartão de inscrição no PIS',                      required: false },
+  { id: 'reservista',   label: 'Certificado de Reservista',          desc: 'Apenas para candidatos do sexo masculino',         required: false },
+  { id: 'escolaridade', label: 'Diploma ou Certificado de Escolaridade', desc: 'Nível exigido para o cargo',                 required: false },
+  { id: 'certidao',     label: 'Certidão de Nascimento ou Casamento',desc: 'Para atualização do estado civil',                required: false },
+  { id: 'cnh',          label: 'CNH',                                desc: 'Apenas se exigida pelo cargo',                    required: false },
+]
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
+const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
+const ALLOWED_EXT   = '.pdf, .jpg, .jpeg, .png'
+
 const STEPS: StepConfig[] = [
+  {
+    id: 0, title: 'Documentos Admissionais',
+    subtitle: 'Envie os documentos necessários para o processo de admissão',
+    icon: Upload, group: 'Arquivos', uploads: true,
+  },
   {
     id: 1, title: 'Dados Pessoais',
     subtitle: 'Informações básicas de identificação do colaborador',
@@ -324,6 +352,7 @@ const STEPS: StepConfig[] = [
 ]
 
 const GROUPS = [
+  { label: 'Arquivos',     steps: STEPS.filter(s => s.group === 'Arquivos') },
   { label: 'Pessoal',      steps: STEPS.filter(s => s.group === 'Pessoal') },
   { label: 'Documentos',   steps: STEPS.filter(s => s.group === 'Documentos') },
   { label: 'Complementar', steps: STEPS.filter(s => s.group === 'Complementar') },
@@ -350,7 +379,7 @@ function FormField({ field, value, onChange }: {
     field.span === 2 && 'md:col-span-2',
     focused
       ? 'border-blue-500'
-      : 'border-slate-300 hover:border-slate-400',
+      : 'border-slate-400 hover:border-slate-500',
   )
 
   const labelCls = cn(
@@ -383,8 +412,8 @@ function FormField({ field, value, onChange }: {
         <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         {field.hint && (
           <Tooltip>
-            <TooltipTrigger>
-              <HelpCircle className="absolute right-9 top-1/2 h-4 w-4 -translate-y-1/2 cursor-help text-slate-300 hover:text-slate-500" />
+            <TooltipTrigger className="absolute right-9 top-1/2 -translate-y-1/2 flex cursor-help items-center justify-center border-0 bg-transparent p-0 text-slate-400 hover:text-slate-600">
+              <HelpCircle className="h-4 w-4" />
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[200px] text-xs">{field.hint}</TooltipContent>
           </Tooltip>
@@ -408,8 +437,8 @@ function FormField({ field, value, onChange }: {
       />
       {field.hint && (
         <Tooltip>
-          <TooltipTrigger>
-            <HelpCircle className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 cursor-help text-slate-300 hover:text-slate-500" />
+          <TooltipTrigger className="absolute right-4 top-1/2 -translate-y-1/2 flex cursor-help items-center justify-center border-0 bg-transparent p-0 text-slate-400 hover:text-slate-600">
+            <HelpCircle className="h-4 w-4" />
           </TooltipTrigger>
           <TooltipContent side="top" className="max-w-[200px] text-xs">{field.hint}</TooltipContent>
         </Tooltip>
@@ -679,7 +708,6 @@ function AvatarSection({ name, avatar, onAvatarChange }: {
   onAvatarChange: (url: string) => void
 }) {
   const galleryRef = useRef<HTMLInputElement>(null)
-  const cameraRef  = useRef<HTMLInputElement>(null)
   const initials   = name.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -732,6 +760,152 @@ function AvatarSection({ name, avatar, onAvatarChange }: {
   )
 }
 
+// ── DocumentUploadStep ─────────────────────────────────────────────────────
+
+function DocumentUploadStep({ uploads, onUpload, onRemove }: {
+  uploads: Record<string, File>
+  onUpload: (id: string, file: File) => void
+  onRemove: (id: string) => void
+}) {
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+
+  const handleFile = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setErrors(prev => ({ ...prev, [id]: 'Formato inválido. Use PDF, JPG ou PNG.' }))
+      return
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setErrors(prev => ({ ...prev, [id]: 'Arquivo muito grande. Máximo 10 MB.' }))
+      return
+    }
+    setErrors(prev => { const next = { ...prev }; delete next[id]; return next })
+    onUpload(id, file)
+  }
+
+  const required = ADMISSION_DOCS.filter(d => d.required)
+  const optional = ADMISSION_DOCS.filter(d => !d.required)
+  const doneCount = Object.keys(uploads).length
+  const reqDone = required.filter(d => uploads[d.id]).length
+
+  return (
+    <div className="space-y-6">
+      {/* Progress summary */}
+      <div className="flex items-center gap-4 rounded-2xl bg-slate-50 px-5 py-4">
+        <div className="flex-1">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[13px] font-semibold text-slate-700">{doneCount} de {ADMISSION_DOCS.length} documentos enviados</span>
+            <span className="text-[12px] font-bold text-slate-500">{reqDone}/{required.length} obrigatórios</span>
+          </div>
+          <div className="relative h-2 overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="absolute left-0 top-0 h-full rounded-full bg-blue-500 transition-all duration-500"
+              style={{ width: `${(doneCount / ADMISSION_DOCS.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Required documents */}
+      <div className="space-y-2">
+        <p className="text-[12px] font-semibold uppercase tracking-widest text-slate-400">Obrigatórios</p>
+        {required.map(doc => (
+          <DocRow key={doc.id} doc={doc} file={uploads[doc.id]} error={errors[doc.id]}
+            inputRef={el => { inputRefs.current[doc.id] = el }}
+            onPickFile={() => inputRefs.current[doc.id]?.click()}
+            onFileChange={e => handleFile(doc.id, e)}
+            onRemove={() => onRemove(doc.id)}
+          />
+        ))}
+      </div>
+
+      {/* Optional documents */}
+      <div className="space-y-2">
+        <p className="text-[12px] font-semibold uppercase tracking-widest text-slate-400">Opcionais</p>
+        {optional.map(doc => (
+          <DocRow key={doc.id} doc={doc} file={uploads[doc.id]} error={errors[doc.id]}
+            inputRef={el => { inputRefs.current[doc.id] = el }}
+            onPickFile={() => inputRefs.current[doc.id]?.click()}
+            onFileChange={e => handleFile(doc.id, e)}
+            onRemove={() => onRemove(doc.id)}
+          />
+        ))}
+      </div>
+
+      <p className="text-center text-[12px] text-slate-400">
+        Formatos aceitos: PDF, JPG, PNG · Tamanho máximo: 10 MB por arquivo
+      </p>
+    </div>
+  )
+}
+
+function DocRow({ doc, file, error, inputRef, onPickFile, onFileChange, onRemove }: {
+  doc: { id: string; label: string; desc: string; required: boolean }
+  file: File | undefined
+  error: string | undefined
+  inputRef: (el: HTMLInputElement | null) => void
+  onPickFile: () => void
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onRemove: () => void
+}) {
+  const uploaded = !!file
+  return (
+    <div className={cn(
+      'flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-colors',
+      uploaded ? 'border-emerald-300 bg-emerald-50' : 'border-slate-300 bg-white',
+      error && 'border-red-300 bg-red-50',
+    )}>
+      {/* Icon */}
+      <div className={cn(
+        'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl',
+        uploaded ? 'bg-emerald-100' : 'bg-slate-100',
+      )}>
+        {uploaded
+          ? <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+          : <File className="h-5 w-5 text-slate-400" />
+        }
+      </div>
+
+      {/* Info */}
+      <div className="min-w-0 flex-1">
+        <p className={cn('truncate text-[13px] font-semibold leading-tight', uploaded ? 'text-emerald-800' : 'text-slate-800')}>
+          {doc.label}
+        </p>
+        {uploaded
+          ? <p className="mt-0.5 truncate text-[12px] text-emerald-600">{file.name}</p>
+          : <p className="mt-0.5 truncate text-[12px] text-slate-400">{doc.desc}</p>
+        }
+        {error && <p className="mt-0.5 text-[11px] font-medium text-red-600">{error}</p>}
+      </div>
+
+      {/* Action */}
+      {uploaded ? (
+        <button type="button" onClick={onRemove}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-500">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      ) : (
+        <button type="button" onClick={onPickFile}
+          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-700 transition-colors hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700">
+          <Upload className="h-3.5 w-3.5" />
+          Enviar
+        </button>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ALLOWED_EXT}
+        onChange={onFileChange}
+        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }}
+      />
+    </div>
+  )
+}
+
 // ── SuccessPage ────────────────────────────────────────────────────────────
 
 function SuccessPage({ name, onLogout }: { name: string; onLogout: () => void }) {
@@ -761,12 +935,13 @@ function SuccessPage({ name, onLogout }: { name: string; onLogout: () => void })
 
 // ── OnboardingPage ─────────────────────────────────────────────────────────
 
-export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
-  const [currentStep, setCurrentStep] = useState(0)
+export function OnboardingPage({ onLogout, initialStep = 0 }: { onLogout: () => void; initialStep?: number }) {
+  const [currentStep, setCurrentStep] = useState(initialStep)
   const [formData, setFormData]       = useState<FormData>(INITIAL_FORM)
   const [avatar, setAvatar]           = useState<string | null>(null)
   const [completed, setCompleted]     = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [uploadedDocs, setUploadedDocs] = useState<Record<string, File>>({})
 
   const step        = STEPS[currentStep]
   const totalSteps  = STEPS.length
@@ -918,7 +1093,16 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                 </CardHeader>
 
                 <CardContent className="p-5 lg:p-7">
-                  {/* Avatar upload — only on step 1 */}
+                  {/* Document uploads step */}
+                  {step.uploads && (
+                    <DocumentUploadStep
+                      uploads={uploadedDocs}
+                      onUpload={(id, file) => setUploadedDocs(prev => ({ ...prev, [id]: file }))}
+                      onRemove={id => setUploadedDocs(prev => { const next = { ...prev }; delete next[id]; return next })}
+                    />
+                  )}
+
+                  {/* Avatar upload — only on step with id 1 */}
                   {step.id === 1 && (
                     <AvatarSection
                       name={formData.Name as string}
