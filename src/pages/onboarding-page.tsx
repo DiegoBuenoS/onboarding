@@ -337,7 +337,7 @@ const GROUPS = [
 const INPUT_BASE =
   'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none ' +
   'transition-all duration-150 placeholder:text-slate-400 ' +
-  'hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10'
+  'hover:border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10)]'
 
 function FormField({ field, value, onChange }: {
   field: FieldDef; value: string
@@ -583,23 +583,23 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
     <TooltipProvider delay={300}>
       <div className="flex h-screen overflow-hidden bg-slate-50">
 
-        {/* ── Sidebar (dark) ── */}
-        <aside className="hidden w-[268px] shrink-0 flex-col bg-slate-900 lg:flex">
+        {/* ── Sidebar ── */}
+        <aside className="hidden w-[268px] shrink-0 flex-col bg-slate-800 lg:flex">
 
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-slate-800 px-5">
+          <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-slate-700 px-5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
               <Briefcase className="h-4 w-4 text-white" />
             </div>
             <div>
               <p className="text-[14px] font-semibold tracking-tight text-white">Smart Onboard</p>
-              <p className="text-[10px] font-medium tracking-wide text-slate-500">Admissão Digital</p>
+              <p className="text-[10px] font-medium tracking-wide text-slate-400">Admissão Digital</p>
             </div>
           </div>
 
           {/* Employee card */}
           <div className="shrink-0 p-4">
-            <div className="rounded-xl border border-slate-800 bg-slate-800/60 p-3.5">
+            <div className="rounded-xl border border-slate-600/70 bg-slate-700/70 p-3.5">
               <div className="flex items-center gap-3">
                 <AvatarUploader
                   name={formData.Name as string}
@@ -609,15 +609,15 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-slate-100">{employeeName}</p>
-                  <p className="text-[11px] text-slate-500">Novo colaborador</p>
+                  <p className="text-[11px] text-slate-300">Novo colaborador</p>
                   <div className="mt-2 flex items-center gap-2">
-                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-700">
+                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-600">
                       <div
                         className="absolute left-0 top-0 h-full rounded-full bg-blue-500 transition-all duration-500"
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
-                    <span className="text-[10px] font-bold tabular-nums text-slate-400">{progressPct}%</span>
+                    <span className="text-[10px] font-bold tabular-nums text-slate-200">{progressPct}%</span>
                   </div>
                 </div>
               </div>
@@ -625,17 +625,17 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
           </div>
 
           {/* Divider */}
-          <div className="mx-4 h-px bg-slate-800" />
+          <div className="mx-4 h-px bg-slate-700" />
 
           {/* Step list */}
           <ScrollArea className="flex-1 px-2 py-3">
             {GROUPS.map(({ label, steps }, gi) => (
               <div key={label} className={cn('mb-1', gi > 0 && 'mt-5')}>
                 <div className="mb-2 flex items-center gap-2 px-3">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">
                     {label}
                   </span>
-                  <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
+                  <span className="rounded bg-slate-700 px-1.5 py-0.5 text-[10px] font-semibold text-slate-200">
                     {steps.filter((_, i) => STEPS.findIndex(x => x.id === steps[i].id) < currentStep).length}/{steps.length}
                   </span>
                 </div>
@@ -649,16 +649,16 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                         className={cn(
                           'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-150',
                           isCurrent
-                            ? 'bg-blue-500/15 text-blue-400'
+                            ? 'bg-sky-500/25 text-white shadow-sm ring-1 ring-sky-300/30'
                             : isDone
-                              ? 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                              : 'text-slate-500 hover:bg-slate-800 hover:text-slate-300',
+                              ? 'text-slate-200 hover:bg-slate-700 hover:text-white'
+                              : 'text-slate-300 hover:bg-slate-700 hover:text-white',
                         )}>
                         <div className={cn(
                           'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold transition-all',
-                          isCurrent ? 'border-blue-500/40 bg-blue-500/20 text-blue-400'
+                          isCurrent ? 'border-sky-300/60 bg-sky-500 text-white'
                             : isDone   ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-400'
-                              : 'border-slate-700 bg-slate-800 text-slate-500',
+                              : 'border-slate-500 bg-slate-700 text-slate-300',
                         )}>
                           {isDone ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : s.id}
                         </div>
@@ -666,7 +666,7 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                           {s.title}
                         </span>
                         {s.optional && (
-                          <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 ring-1 ring-slate-700">
+                          <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold text-slate-300 ring-1 ring-slate-500">
                             opt
                           </span>
                         )}
@@ -674,26 +674,26 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                     )
                   })}
                 </div>
-                {gi < GROUPS.length - 1 && <div className="mx-3 mt-4 h-px bg-slate-800" />}
+                {gi < GROUPS.length - 1 && <div className="mx-3 mt-4 h-px bg-slate-700" />}
               </div>
             ))}
           </ScrollArea>
 
           {/* Bottom */}
-          <div className="shrink-0 border-t border-slate-800 p-3 space-y-1">
-            <div className="flex items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-500">
+          <div className="shrink-0 border-t border-slate-700 p-3 space-y-1">
+            <div className="flex items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-300">
               <span>{doneCount} de {totalSteps} etapas</span>
               <span className={cn(
                 'rounded px-2 py-0.5 text-[10px] font-semibold',
                 doneCount === totalSteps
                   ? 'bg-emerald-500/15 text-emerald-400'
-                  : 'bg-slate-800 text-slate-400',
+                  : 'bg-slate-700 text-slate-200',
               )}>
                 {doneCount === totalSteps ? 'Completo' : 'Em andamento'}
               </span>
             </div>
             <button type="button" onClick={onLogout}
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-300">
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white">
               <LogOut className="h-4 w-4" />
               Sair da conta
             </button>
@@ -756,11 +756,53 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
 
           {/* Content */}
           <main className="flex-1 overflow-y-auto p-5 lg:p-7">
-            <div
-              key={currentStep}
-              className="animate-in fade-in-0 slide-in-from-bottom-2 mx-auto max-w-3xl space-y-4"
-              style={{ animationDuration: '260ms' }}
-            >
+            <div className="mx-auto flex max-w-3xl flex-col gap-4">
+              {/* Navigation row */}
+              <div className="sticky top-0 z-20 -mx-1 rounded-b-2xl bg-slate-50/95 px-1 pb-3 pt-1 backdrop-blur">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                  <Button variant="outline" onClick={goPrev} disabled={currentStep === 0}
+                    className="h-10 gap-1.5 rounded-xl border-slate-200 px-3 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-30 sm:px-4">
+                    <ChevronLeft className="h-4 w-4" />
+                    Anterior
+                  </Button>
+
+                  {/* Dot indicators */}
+                  <div className="hidden items-center gap-1.5 sm:flex">
+                    {STEPS.map((_, i) => (
+                      <Tooltip key={i}>
+                        <TooltipTrigger
+                          type="button"
+                          onClick={() => setCurrentStep(i)}
+                          className={cn(
+                            'rounded-full transition-all duration-300',
+                            i === currentStep ? 'h-2 w-5 bg-blue-500'
+                              : i < currentStep ? 'h-2 w-2 bg-blue-300'
+                                : 'h-2 w-2 bg-slate-300',
+                          )}
+                        />
+                        <TooltipContent side="top" className="text-xs">
+                          {STEPS[i].title}
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+
+                  <Button onClick={goNext}
+                    className="h-10 gap-1.5 rounded-xl bg-blue-600 px-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700 active:scale-[0.98] sm:px-5">
+                    {currentStep === totalSteps - 1 ? (
+                      <><Check className="h-4 w-4" /> Concluir</>
+                    ) : (
+                      <>Próximo <ChevronRight className="h-4 w-4" /></>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div
+                key={currentStep}
+                className="animate-in fade-in-0 slide-in-from-bottom-2 space-y-4"
+                style={{ animationDuration: '260ms' }}
+              >
 
               {/* Alert banners */}
               {step.alert && (
@@ -858,45 +900,7 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                 </CardContent>
               </Card>
 
-              {/* Navigation row */}
-              <div className="flex items-center justify-between pb-2 pt-1">
-                <Button variant="outline" onClick={goPrev} disabled={currentStep === 0}
-                  className="h-10 gap-1.5 rounded-xl border-slate-200 px-4 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-30">
-                  <ChevronLeft className="h-4 w-4" />
-                  Anterior
-                </Button>
-
-                {/* Dot indicators */}
-                <div className="flex items-center gap-1.5">
-                  {STEPS.map((_, i) => (
-                    <Tooltip key={i}>
-                      <TooltipTrigger
-                        type="button"
-                        onClick={() => setCurrentStep(i)}
-                        className={cn(
-                          'rounded-full transition-all duration-300',
-                          i === currentStep ? 'h-2 w-5 bg-blue-500'
-                            : i < currentStep ? 'h-2 w-2 bg-blue-300'
-                              : 'h-2 w-2 bg-slate-300',
-                        )}
-                      />
-                      <TooltipContent side="top" className="text-xs">
-                        {STEPS[i].title}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
-
-                <Button onClick={goNext}
-                  className="h-10 gap-1.5 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700 active:scale-[0.98]">
-                  {currentStep === totalSteps - 1 ? (
-                    <><Check className="h-4 w-4" /> Concluir cadastro</>
-                  ) : (
-                    <>Próximo <ChevronRight className="h-4 w-4" /></>
-                  )}
-                </Button>
               </div>
-
             </div>
           </main>
         </div>
