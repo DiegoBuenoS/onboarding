@@ -870,16 +870,16 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                 <div className="flex items-center gap-1.5">
                   {STEPS.map((_, i) => (
                     <Tooltip key={i}>
-                      <TooltipTrigger>
-                        <button type="button" onClick={() => setCurrentStep(i)}
-                          className={cn(
-                            'rounded-full transition-all duration-300',
-                            i === currentStep ? 'h-2 w-5 bg-blue-500'
-                              : i < currentStep ? 'h-2 w-2 bg-blue-300'
-                                : 'h-2 w-2 bg-slate-300',
-                          )}
-                        />
-                      </TooltipTrigger>
+                      <TooltipTrigger
+                        type="button"
+                        onClick={() => setCurrentStep(i)}
+                        className={cn(
+                          'rounded-full transition-all duration-300',
+                          i === currentStep ? 'h-2 w-5 bg-blue-500'
+                            : i < currentStep ? 'h-2 w-2 bg-blue-300'
+                              : 'h-2 w-2 bg-slate-300',
+                        )}
+                      />
                       <TooltipContent side="top" className="text-xs">
                         {STEPS[i].title}
                       </TooltipContent>
