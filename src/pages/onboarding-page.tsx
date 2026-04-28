@@ -329,78 +329,91 @@ const GROUPS = [
   { label: 'Complementar', steps: STEPS.filter(s => s.group === 'Complementar') },
 ]
 
-// ── Input base style ───────────────────────────────────────────────────────
-
-const INPUT_BASE =
-  'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ' +
-  'min-h-[48px] transition-all duration-150 placeholder:text-slate-400 ' +
-  'hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10'
-
-// ── FormField ──────────────────────────────────────────────────────────────
+// ── FormField — Apple floating-label style ────────────────────────────────
 
 function FormField({ field, value, onChange }: {
   field: FieldDef; value: string
   onChange: (key: string, value: string) => void
 }) {
+  const [focused, setFocused] = useState(false)
+  const filled = field.type === 'select' ? value !== '' : value.length > 0
+  const isUp   = focused || filled
+
   const handleRawChange = (raw: string) => {
     if (field.mask) onChange(field.key, applyMask(raw, field.mask))
     else if (field.type === 'tel') onChange(field.key, applyPhoneMask(raw))
     else onChange(field.key, raw)
   }
 
-  const labelEl = (
-    <div className={cn('flex items-center gap-1.5', field.span === 2 && 'col-span-2')}>
-      <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
-        {field.label}
-      </span>
-      {field.required && <span className="text-red-500 text-[11px]">*</span>}
+  const wrapperCls = cn(
+    'relative rounded-2xl border bg-white transition-colors duration-150',
+    field.span === 2 && 'col-span-2',
+    focused
+      ? 'border-blue-500'
+      : 'border-slate-200 hover:border-slate-300',
+  )
+
+  const labelCls = cn(
+    'pointer-events-none absolute left-4 select-none transition-all duration-150',
+    isUp
+      ? cn('top-2.5 text-[11px] font-medium', focused ? 'text-blue-500' : 'text-slate-400')
+      : 'top-1/2 -translate-y-1/2 text-[15px] text-slate-400',
+  )
+
+  const inputCls =
+    'w-full bg-transparent px-4 pt-[22px] pb-[10px] text-[15px] text-slate-900 outline-none ' +
+    'placeholder-transparent'
+
+  const labelText = field.required ? `${field.label} *` : field.label
+
+  if (field.type === 'select') {
+    return (
+      <div className={wrapperCls}>
+        <label className={labelCls}>{labelText}</label>
+        <select
+          value={value}
+          onChange={e => onChange(field.key, e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className={cn(inputCls, 'cursor-pointer appearance-none pr-10')}
+        >
+          <option value="" />
+          {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        {field.hint && (
+          <Tooltip>
+            <TooltipTrigger>
+              <HelpCircle className="absolute right-9 top-1/2 h-4 w-4 -translate-y-1/2 cursor-help text-slate-300 hover:text-slate-500" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[200px] text-xs">{field.hint}</TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className={cn(wrapperCls)}>
+      <label className={labelCls}>{labelText}</label>
+      <input
+        type={field.type === 'tel' ? 'tel' : field.type}
+        value={value}
+        onChange={e => handleRawChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder=""
+        inputMode={field.mask || field.type === 'tel' ? 'numeric' : undefined}
+        className={cn(inputCls, field.hint && 'pr-10')}
+      />
       {field.hint && (
         <Tooltip>
           <TooltipTrigger>
-            <HelpCircle className="h-3.5 w-3.5 cursor-help text-slate-400 hover:text-slate-600" />
+            <HelpCircle className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 cursor-help text-slate-300 hover:text-slate-500" />
           </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-[200px] text-xs">
-            {field.hint}
-          </TooltipContent>
+          <TooltipContent side="top" className="max-w-[200px] text-xs">{field.hint}</TooltipContent>
         </Tooltip>
       )}
-    </div>
-  )
-
-  const inputEl = field.type === 'select' ? (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={e => onChange(field.key, e.target.value)}
-        className={cn(INPUT_BASE, 'cursor-pointer appearance-none pr-10')}
-      >
-        <option value="">Selecionar…</option>
-        {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-    </div>
-  ) : field.type === 'date' ? (
-    <input
-      type="date"
-      value={value}
-      onChange={e => onChange(field.key, e.target.value)}
-      className={cn(INPUT_BASE, 'cursor-pointer')}
-    />
-  ) : (
-    <input
-      type={field.type === 'tel' ? 'tel' : field.type}
-      value={value}
-      onChange={e => handleRawChange(e.target.value)}
-      placeholder={field.placeholder ?? ''}
-      inputMode={field.mask || field.type === 'tel' ? 'numeric' : undefined}
-      className={INPUT_BASE}
-    />
-  )
-
-  return (
-    <div className={cn('flex flex-col gap-2', field.span === 2 && 'col-span-2')}>
-      {labelEl}
-      {inputEl}
     </div>
   )
 }
@@ -439,8 +452,8 @@ function FieldsGrid({ fields, checkboxItems, formData, onChange }: {
   onChange: (key: string, value: string | boolean) => void
 }) {
   return (
-    <div className="space-y-7">
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {fields.map(f => (
           <FormField
             key={f.key} field={f}
@@ -450,9 +463,9 @@ function FieldsGrid({ fields, checkboxItems, formData, onChange }: {
         ))}
       </div>
       {checkboxItems && checkboxItems.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="h-px bg-slate-100" />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
             {checkboxItems.map(item => (
               <CheckboxCard
                 key={item.key} item={item}
@@ -822,29 +835,29 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
               )}
 
               {/* Step Card */}
-              <Card className="border-slate-200 shadow-sm">
-                <CardHeader className="border-b border-slate-100 p-5 lg:p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3.5">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50">
-                        <step.icon className="h-5 w-5 text-blue-600" />
+              <Card className="border-slate-200 shadow-none">
+                <CardHeader className="border-b border-slate-100 px-5 py-4 lg:px-7 lg:py-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+                        <step.icon className="h-[18px] w-[18px] text-blue-600" />
                       </div>
                       <div>
-                        <CardTitle className="text-base font-bold tracking-tight text-slate-900 lg:text-lg">
+                        <CardTitle className="text-[15px] font-semibold tracking-tight text-slate-900">
                           {step.title}
                         </CardTitle>
-                        <CardDescription className="mt-0.5 text-[13px] text-slate-500">
+                        <CardDescription className="text-[13px] text-slate-400">
                           {step.subtitle}
                         </CardDescription>
                       </div>
                     </div>
-                    <span className="shrink-0 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-500">
-                      {currentStep + 1}/{totalSteps}
+                    <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+                      {currentStep + 1} / {totalSteps}
                     </span>
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-5 lg:p-6">
+                <CardContent className="p-5 lg:p-7">
                   {/* Tabs variant */}
                   {step.tabs && (
                     <Tabs defaultValue={step.tabs[0].value}>
