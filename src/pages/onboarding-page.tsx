@@ -337,7 +337,7 @@ function FormField({ field, value, onChange }: {
 }) {
   const [focused, setFocused] = useState(false)
   const filled = field.type === 'select' ? value !== '' : value.length > 0
-  const isUp   = focused || filled
+  const isUp   = focused || filled || field.type === 'date'
 
   const handleRawChange = (raw: string) => {
     if (field.mask) onChange(field.key, applyMask(raw, field.mask))
