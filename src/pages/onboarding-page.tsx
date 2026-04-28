@@ -368,9 +368,9 @@ function FormField({ field, value, onChange }: {
           >
             <HelpCircle className="h-3 w-3" />
           </button>
-          <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium normal-case tracking-normal text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+          <span className="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-max max-w-[220px] rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium normal-case tracking-normal text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
             {field.hint}
-            <span className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] bg-slate-900" />
+            <span className="absolute left-2 top-full h-2 w-2 -translate-y-1/2 rotate-45 rounded-[2px] bg-slate-900" />
           </span>
         </span>
       )}
