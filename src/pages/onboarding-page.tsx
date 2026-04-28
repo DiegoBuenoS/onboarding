@@ -739,8 +739,11 @@ function AvatarSection({ name, avatar, onAvatarChange }: {
         </button>
       </div>
 
-      <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-      <input ref={cameraRef}  type="file" accept="image/*" capture="user" className="hidden" onChange={handleFile} />
+      {/* Inputs visually hidden but in DOM — display:none blocks camera on mobile */}
+      <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile}
+        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }} />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile}
+        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }} />
     </div>
   )
 }
