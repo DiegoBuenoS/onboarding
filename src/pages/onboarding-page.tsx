@@ -360,14 +360,19 @@ function FormField({ field, value, onChange }: {
       </span>
       {field.required && <span className="text-red-500 text-[10px]">*</span>}
       {field.hint && (
-        <Tooltip>
-          <TooltipTrigger>
-            <HelpCircle className="h-3 w-3 cursor-help text-slate-400 hover:text-slate-600" />
-          </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-[200px] text-xs">
+        <span className="group relative inline-flex">
+          <button
+            type="button"
+            aria-label={`Ajuda: ${field.label}`}
+            className="inline-flex cursor-help items-center justify-center rounded-full text-slate-400 outline-none transition-colors hover:text-slate-600 focus-visible:text-slate-600 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+          >
+            <HelpCircle className="h-3 w-3" />
+          </button>
+          <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium normal-case tracking-normal text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
             {field.hint}
-          </TooltipContent>
-        </Tooltip>
+            <span className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] bg-slate-900" />
+          </span>
+        </span>
       )}
     </div>
   )
