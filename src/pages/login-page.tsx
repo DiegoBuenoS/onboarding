@@ -203,6 +203,7 @@ export function LoginPage({ onLogin }: { onLogin?: () => void }) {
           {/* Form */}
           <form
             onSubmit={handleSubmit}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !loading) e.currentTarget.requestSubmit() }}
             className="animate-in fade-in-0 slide-in-from-bottom-3 space-y-3"
             style={{ animationDelay: '160ms', animationFillMode: 'backwards', animationDuration: '500ms' }}
           >

@@ -3,7 +3,7 @@ import {
   User, MapPin, Phone, FileText, BookOpen, Briefcase,
   Car, Shield, Globe, Heart, Camera, ChevronLeft,
   ChevronRight, ChevronDown, Check, LogOut, Info,
-  HelpCircle, AlertTriangle, Menu,
+  HelpCircle, AlertTriangle, Menu, Upload, X,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -347,7 +347,7 @@ function FormField({ field, value, onChange }: {
 
   const wrapperCls = cn(
     'relative rounded-2xl border bg-white transition-colors duration-150',
-    field.span === 2 && 'col-span-2',
+    field.span === 2 && 'md:col-span-2',
     focused
       ? 'border-blue-500'
       : 'border-slate-200 hover:border-slate-300',
@@ -453,7 +453,7 @@ function FieldsGrid({ fields, checkboxItems, formData, onChange }: {
 }) {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {fields.map(f => (
           <FormField
             key={f.key} field={f}
@@ -672,6 +672,79 @@ function SidebarContent({ employeeName, avatar, setAvatar, formData, progressPct
   )
 }
 
+// ── AvatarSection — shown inside step 1 card ──────────────────────────────
+
+function AvatarSection({ name, avatar, onAvatarChange }: {
+  name: string; avatar: string | null
+  onAvatarChange: (url: string) => void
+}) {
+  const galleryRef = useRef<HTMLInputElement>(null)
+  const cameraRef  = useRef<HTMLInputElement>(null)
+  const initials   = name.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => { if (reader.result) onAvatarChange(reader.result as string) }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  return (
+    <div className="mb-6 flex flex-col items-center gap-4 border-b border-slate-100 pb-6">
+      {/* Avatar circle */}
+      <div className="relative">
+        <div className="h-24 w-24 overflow-hidden rounded-full ring-4 ring-blue-50">
+          {avatar ? (
+            <img src={avatar} alt="Foto" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-blue-600 text-2xl font-semibold text-white">
+              {initials || <User className="h-8 w-8" />}
+            </div>
+          )}
+        </div>
+        {avatar && (
+          <button
+            type="button"
+            onClick={() => onAvatarChange('')}
+            className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-sm hover:bg-red-600"
+            aria-label="Remover foto"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* Label */}
+      <p className="text-sm font-medium text-slate-600">Foto de perfil</p>
+
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => galleryRef.current?.click()}
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
+        >
+          <Upload className="h-4 w-4 text-slate-500" />
+          Galeria
+        </button>
+        <button
+          type="button"
+          onClick={() => cameraRef.current?.click()}
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
+        >
+          <Camera className="h-4 w-4 text-slate-500" />
+          Câmera
+        </button>
+      </div>
+
+      <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <input ref={cameraRef}  type="file" accept="image/*" capture="user" className="hidden" onChange={handleFile} />
+    </div>
+  )
+}
+
 // ── SuccessPage ────────────────────────────────────────────────────────────
 
 function SuccessPage({ name, onLogout }: { name: string; onLogout: () => void }) {
@@ -858,6 +931,15 @@ export function OnboardingPage({ onLogout }: { onLogout: () => void }) {
                 </CardHeader>
 
                 <CardContent className="p-5 lg:p-7">
+                  {/* Avatar upload — only on step 1 */}
+                  {step.id === 1 && (
+                    <AvatarSection
+                      name={formData.Name as string}
+                      avatar={avatar}
+                      onAvatarChange={setAvatar}
+                    />
+                  )}
+
                   {/* Tabs variant */}
                   {step.tabs && (
                     <Tabs defaultValue={step.tabs[0].value}>
