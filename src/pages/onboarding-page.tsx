@@ -527,6 +527,7 @@ function SidebarContent({ employeeName, avatar, setAvatar, formData, progressPct
 }) {
   return (
     <div className="flex h-full flex-col bg-slate-900">
+
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-slate-800 px-5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
@@ -534,99 +535,126 @@ function SidebarContent({ employeeName, avatar, setAvatar, formData, progressPct
         </div>
         <div>
           <p className="text-[14px] font-semibold tracking-tight text-white">Smart Onboard</p>
-          <p className="text-[10px] font-medium tracking-wide text-slate-500">Admissão Digital</p>
+          <p className="text-[11px] text-slate-400">Admissão Digital</p>
         </div>
       </div>
 
       {/* Employee card */}
-      <div className="shrink-0 p-4">
-        <div className="rounded-xl border border-slate-800 bg-slate-800/60 p-3.5">
+      <div className="shrink-0 px-4 pt-4 pb-3">
+        <div className="rounded-xl bg-slate-800 p-4">
           <div className="flex items-center gap-3">
             <AvatarUploader name={formData.Name as string} avatar={avatar} onAvatarChange={setAvatar} dark />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-semibold text-slate-100">{employeeName}</p>
-              <p className="text-[11px] text-slate-500">Novo colaborador</p>
-              <div className="mt-2 flex items-center gap-2">
+              <p className="truncate text-sm font-semibold text-white">{employeeName}</p>
+              <p className="text-xs text-slate-400">Novo colaborador</p>
+              <div className="mt-2.5 flex items-center gap-2">
                 <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-700">
                   <div
                     className="absolute left-0 top-0 h-full rounded-full bg-blue-500 transition-all duration-500"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
-                <span className="text-[10px] font-bold tabular-nums text-slate-400">{progressPct}%</span>
+                <span className="text-[11px] font-bold tabular-nums text-slate-300">{progressPct}%</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mx-4 h-px bg-slate-800" />
-
       {/* Step list */}
-      <ScrollArea className="flex-1 px-2 py-3">
-        {GROUPS.map(({ label, steps }, gi) => (
-          <div key={label} className={cn('mb-1', gi > 0 && 'mt-5')}>
-            <div className="mb-2 flex items-center gap-2 px-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-              <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
-                {steps.filter((_, i) => STEPS.findIndex(x => x.id === steps[i].id) < currentStep).length}/{steps.length}
-              </span>
-            </div>
-            <div className="space-y-0.5">
-              {steps.map(s => {
-                const idx       = STEPS.findIndex(x => x.id === s.id)
-                const isCurrent = idx === currentStep
-                const isDone    = idx < currentStep
-                return (
-                  <button key={s.id} type="button"
-                    onClick={() => { setCurrentStep(idx); onNavigate?.() }}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-150',
-                      isCurrent ? 'bg-blue-500/15 text-blue-400'
-                        : 'text-slate-500 hover:bg-slate-800 hover:text-slate-300',
-                    )}>
-                    <div className={cn(
-                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold transition-all',
-                      isCurrent ? 'border-blue-500/40 bg-blue-500/20 text-blue-400'
-                        : isDone   ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-400'
-                          : 'border-slate-700 bg-slate-800 text-slate-500',
-                    )}>
-                      {isDone ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : s.id}
-                    </div>
-                    <span className={cn('flex-1 truncate text-[13px] font-medium', isCurrent && 'font-semibold')}>
-                      {s.title}
-                    </span>
-                    {s.optional && (
-                      <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 ring-1 ring-slate-700">
-                        opt
+      <ScrollArea className="flex-1 px-3 pb-3">
+        {GROUPS.map(({ label, steps }, gi) => {
+          const groupDone = steps.filter(s => STEPS.findIndex(x => x.id === s.id) < currentStep).length
+          return (
+            <div key={label} className={cn(gi > 0 && 'mt-2')}>
+
+              {/* Group header */}
+              <div className="flex items-center gap-2.5 px-1 py-2">
+                <div className="h-px flex-1 bg-slate-800" />
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                  {label}
+                </span>
+                <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-400">
+                  {groupDone}/{steps.length}
+                </span>
+                <div className="h-px flex-1 bg-slate-800" />
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-1">
+                {steps.map(s => {
+                  const idx       = STEPS.findIndex(x => x.id === s.id)
+                  const isCurrent = idx === currentStep
+                  const isDone    = idx < currentStep
+                  return (
+                    <button key={s.id} type="button"
+                      onClick={() => { setCurrentStep(idx); onNavigate?.() }}
+                      className={cn(
+                        'flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all duration-150',
+                        isCurrent
+                          ? 'bg-blue-600 shadow-lg shadow-blue-600/20'
+                          : isDone
+                            ? 'hover:bg-slate-800'
+                            : 'hover:bg-slate-800/60',
+                      )}>
+
+                      {/* Indicator */}
+                      <div className={cn(
+                        'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all',
+                        isCurrent
+                          ? 'bg-white/20 text-white'
+                          : isDone
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-slate-800 text-slate-500 ring-1 ring-slate-700',
+                      )}>
+                        {isDone
+                          ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+                          : s.id}
+                      </div>
+
+                      {/* Label */}
+                      <span className={cn(
+                        'flex-1 truncate text-sm font-medium leading-tight',
+                        isCurrent ? 'font-semibold text-white'
+                          : isDone  ? 'text-slate-300'
+                            : 'text-slate-400 group-hover:text-slate-200',
+                      )}>
+                        {s.title}
                       </span>
-                    )}
-                  </button>
-                )
-              })}
+
+                      {s.optional && !isCurrent && (
+                        <span className="shrink-0 text-[10px] text-slate-600">opt</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
             </div>
-            {gi < GROUPS.length - 1 && <div className="mx-3 mt-4 h-px bg-slate-800" />}
-          </div>
-        ))}
+          )
+        })}
       </ScrollArea>
 
       {/* Bottom */}
-      <div className="shrink-0 border-t border-slate-800 p-3 space-y-1">
-        <div className="flex items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-500">
-          <span>{doneCount} de {totalSteps} etapas</span>
+      <div className="shrink-0 border-t border-slate-800 px-3 py-3 space-y-1">
+        <div className="flex items-center justify-between px-3 py-1.5 text-xs">
+          <span className="text-slate-400">{doneCount} de {totalSteps} etapas</span>
           <span className={cn(
-            'rounded px-2 py-0.5 text-[10px] font-semibold',
-            doneCount === totalSteps ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-800 text-slate-400',
+            'rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
+            doneCount === totalSteps
+              ? 'bg-emerald-500/15 text-emerald-400'
+              : 'bg-slate-800 text-slate-400',
           )}>
             {doneCount === totalSteps ? 'Completo' : 'Em andamento'}
           </span>
         </div>
         <button type="button" onClick={onLogout}
-          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-300">
+          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200">
           <LogOut className="h-4 w-4" />
           Sair da conta
         </button>
       </div>
+
     </div>
   )
 }
