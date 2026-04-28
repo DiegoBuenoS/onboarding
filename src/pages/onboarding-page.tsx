@@ -3,7 +3,7 @@ import {
   User, MapPin, Phone, FileText, BookOpen, Briefcase,
   Car, Shield, Globe, Heart, Camera, ChevronLeft,
   ChevronRight, ChevronDown, Check, LogOut, Info,
-  HelpCircle, AlertTriangle, Menu, Upload, X,
+  HelpCircle, AlertTriangle, Menu, X, Pencil,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -350,7 +350,7 @@ function FormField({ field, value, onChange }: {
     field.span === 2 && 'md:col-span-2',
     focused
       ? 'border-blue-500'
-      : 'border-slate-200 hover:border-slate-300',
+      : 'border-slate-300 hover:border-slate-400',
   )
 
   const labelCls = cn(
@@ -716,33 +716,17 @@ function AvatarSection({ name, avatar, onAvatarChange }: {
         )}
       </div>
 
-      {/* Label */}
-      <p className="text-sm font-medium text-slate-600">Foto de perfil</p>
+      {/* Single edit button */}
+      <button
+        type="button"
+        onClick={() => galleryRef.current?.click()}
+        className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
+      >
+        <Pencil className="h-4 w-4 text-slate-500" />
+        Editar foto
+      </button>
 
-      {/* Action buttons */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => galleryRef.current?.click()}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
-        >
-          <Upload className="h-4 w-4 text-slate-500" />
-          Galeria
-        </button>
-        <button
-          type="button"
-          onClick={() => cameraRef.current?.click()}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
-        >
-          <Camera className="h-4 w-4 text-slate-500" />
-          Câmera
-        </button>
-      </div>
-
-      {/* Inputs visually hidden but in DOM — display:none blocks camera on mobile */}
       <input ref={galleryRef} type="file" accept="image/*" onChange={handleFile}
-        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }} />
-      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile}
         style={{ position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden', pointerEvents: 'none' }} />
     </div>
   )
