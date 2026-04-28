@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 
-const DEMO_EMAIL = 'demo@talenthub.com'
-const DEMO_PASSWORD = '123456'
+const DEMO_EMAIL = 'demo'
+const DEMO_PASSWORD = 'demo'
 
 // ─────────────────────────────────────────────
 // FloatingInput — dark variant
@@ -207,12 +207,12 @@ export function LoginPage({ onLogin }: { onLogin?: () => void }) {
             style={{ animationDelay: '160ms', animationFillMode: 'backwards', animationDuration: '500ms' }}
           >
             <FloatingInput
-              label="E-mail corporativo"
-              type="email"
+              label="Usuário"
+              type="text"
               icon={<Mail className="h-[18px] w-[18px]" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              autoComplete="username"
             />
             <FloatingInput
               label="Senha de acesso"
@@ -291,7 +291,7 @@ export function LoginPage({ onLogin }: { onLogin?: () => void }) {
             </p>
             <div className="space-y-0.5">
               <p className="text-xs text-slate-500">
-                E-mail: <code className="font-mono font-bold text-slate-300">{DEMO_EMAIL}</code>
+                Usuário: <code className="font-mono font-bold text-slate-300">{DEMO_EMAIL}</code>
               </p>
               <p className="text-xs text-slate-500">
                 Senha: <code className="font-mono font-bold text-slate-300">{DEMO_PASSWORD}</code>
